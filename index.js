@@ -17,7 +17,7 @@ const distube = new DisTube(client, {
   plugins: [new YtDlpPlugin()],
 });
 
-client.on('ready', () => {
+client.once('ready', () => {
   console.log('Ariel is online 🎶');
 });
 
@@ -31,20 +31,36 @@ client.on('messageCreate', async (message) => {
     const vc = message.member.voice.channel;
     if (!vc) return message.reply('Join VC first');
 
-    distube.play(vc, args.join(' '), {
-      member: message.member,
-      textChannel: message.channel,
-    });
+    try {
+      await distube.play(vc, args.join(' '), {
+        member: message.member,
+        textChannel: message.channel,
+      });
+    } catch (e) {
+      message.channel.send('Error playing song');
+    }
   }
 
   if (command === 'stop') {
-    distube.stop(message);
+    const queue = distube.getQueue(message.guildId);
+    if (!queue) return message.reply('Nothing playing');
+
+    queue.stop();
     message.channel.send('Stopped');
   }
 });
 
 distube.on('playSong', (queue, song) => {
-  queue.textChannel.send(`Playing: ${song.name}`);
+  queue.textChannel.send(`🎶 Playing: ${song.name}`);
+});
+
+distube.on('addSong', (queue, song) => {
+  queue.textChannel.send(`➕ Added: ${song.name}`);
+});
+
+distube.on('error', (channel, error) => {
+  console.error(error);
+  if (channel) channel.send('Error occurred');
 });
 
 client.login(process.env.TOKEN);
