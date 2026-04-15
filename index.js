@@ -1,5 +1,7 @@
 require('dotenv').config();
 
+process.env.YTDLP_DISABLE_UPDATE = 'true';
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const { DisTube } = require('distube');
 const { YtDlpPlugin } = require('@distube/yt-dlp');
@@ -15,6 +17,8 @@ const client = new Client({
 
 const distube = new DisTube(client, {
   plugins: [new YtDlpPlugin()],
+  emitNewSongOnly: true,
+  nsfw: true,
 });
 
 client.once('ready', () => {
@@ -37,7 +41,8 @@ client.on('messageCreate', async (message) => {
         textChannel: message.channel,
       });
     } catch (e) {
-      message.channel.send('Error playing song');
+      console.error(e);
+      message.channel.send('❌ Failed to play song');
     }
   }
 
@@ -46,7 +51,7 @@ client.on('messageCreate', async (message) => {
     if (!queue) return message.reply('Nothing playing');
 
     queue.stop();
-    message.channel.send('Stopped');
+    message.channel.send('⏹ Stopped');
   }
 });
 
@@ -59,8 +64,8 @@ distube.on('addSong', (queue, song) => {
 });
 
 distube.on('error', (channel, error) => {
-  console.error(error);
-  if (channel) channel.send('Error occurred');
+  console.error('DisTube Error:', error);
+  if (channel) channel.send('⚠️ Error occurred while playing');
 });
 
 client.login(process.env.TOKEN);
