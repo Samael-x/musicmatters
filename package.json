@@ -1,0 +1,15 @@
+{
+  "name": "ariel-bot",
+  "version": "1.0.0",
+  "description": "Ariel Discord Music Bot",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.14.1",
+    "distube": "^4.0.0",
+    "@distube/yt-dlp": "^2.0.0",
+    "dotenv": "^16.4.5"
+  }
+}
