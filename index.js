@@ -5,6 +5,7 @@ process.env.YTDLP_DISABLE_UPDATE = 'true';
 const { Client, GatewayIntentBits } = require('discord.js');
 const { DisTube } = require('distube');
 const { YtDlpPlugin } = require('@distube/yt-dlp');
+const ffmpeg = require('ffmpeg-static'); // ✅ FIX
 
 const client = new Client({
   intents: [
@@ -17,6 +18,9 @@ const client = new Client({
 
 const distube = new DisTube(client, {
   plugins: [new YtDlpPlugin()],
+  ffmpeg: {
+    path: ffmpeg, // ✅ FIX
+  },
   emitNewSongOnly: true,
   nsfw: true,
 });
